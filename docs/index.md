@@ -1,12 +1,13 @@
-# NOGAN SYNTHESIZER
-<!-- [![PyPI version](https://badge.fury.io/py/genai-evaluation.svg)](https://badge.fury.io/py/genai-evaluation)
-[![Documentation](https://img.shields.io/badge/Documentation-%20-blue)](https://rajiviyer.github.io/genai_evaluation/) -->
+# Home
+[![PyPI version](https://badge.fury.io/py/genai-evaluation.svg)](https://badge.fury.io/py/genai-evaluation)
 
+GenAI Evaluation is a library which contains methods to evaluate differences in Real & Synthetic Data. 
 
-NoGANSynthesizer is a library which generates synthetic tabular data based on methods of multivariate binning. It offers faster, more accurate and less complex alternative to GAN. 
+## Functions
+- **multivariate_ecdf**: Computes joint or multivariate ECDF in contrast to the univariate capabilities provided by packages like statsmodels
+- **ks_statistic**: Calculates the KS Statistic for two multivariate ECDFs  
 
-## Class
-- **NoGANSynthesizer**: Synthetic Data Generator that fits a tabular data
+Read more in the [API Reference](./api_reference.md) & [User Guide](./user_guide.md) pages.
 
 ## Authors
 - [Dr. Vincent Granville](mailto:vincentg@mltechniques.com) - Research
@@ -15,7 +16,7 @@ NoGANSynthesizer is a library which generates synthetic tabular data based on me
 ## Installation
 The package can be installed with
 ```
-pip install nogan_synthesizer
+pip install genai_evaluation
 ```
 
 ## Tests
@@ -33,7 +34,7 @@ pip install -e .
 
 Start by importing the class
 ```Python
-from nogan_synthesizer import NoGANSynth
+from genai_evaluation import multivariate_ecdf, ks_statistic
 ```
 
 Assuming we have two pandas dataframes (Real & Synthetic) and only numerical columns, we pass them to the multivariate_ecdf function which returns the computed multivariate ECDFs of both.

@@ -1,0 +1,12 @@
+site_name: NoGAN Synthesizer
+
+theme:
+  name: "mkdocs"
+
+plugins:
+  - mkdocstrings
+
+nav:
+  - index.md
+  - api_reference.md
+  - user_guide.md
