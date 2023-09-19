@@ -1,22 +1,21 @@
 # API Reference
 
-**multivariate_ecdf**(*data_a, data_b, n_nodes = 1000, verbose = True, random_seed = None*)
+### NoGANSynth Class and Methods
+NoGAN Tabular Data Synthesizer generates synthetic data based on the multivariate binning technique performed on the Training or Real Dataset.
 
+::: nogan_synthesizer.NoGANSynth
 
-Function to compute ecdf on proportion of row counts generated
-by dynamic pandas queries on a dataset.
+### Preprocessing
 
-It returns a tuple of query_list and computed ECDFs of both Input Datasets.
+**wrap_category_columns**(*data: pd.DataFrame, cat_cols: List[str]*)
 
-The query list is generated using the first dataset as reference. It is a list of query strings combined for each column.
-E.g. Say we have a dataframe with two columns **`x0`** & **`x1`**. Then the query string will be generated as **`x0 <= z0 and x1 <= z1`**, where **`z0`**, **`z1`** calculated based on random quantiles that are uniformly distributed on [0, 1], for each feature.
-Many such query_strings are generated and their respective count proportions are calculated for getting the ECDF from both the input datasets.
+Categorical Columns can be preprocessed using key-value pairs (called flag vector) of all categorical columns and collapsing all these columns into a single feature with integer values. **wrap_category_columns** implements this concept.
 
-::: genai_evaluation.multivariate_ecdf
---------------------------------
-**ks_statistic**(*ecdf_a, ecdf_b*)
+::: nogan_synthesizer.preprocessing.wrap_category_columns
 
-Function to calculate the KS Statistic between the two input ECDFs.
-Calculates the maximum separation (distance) between the ECDFs and yields a result ranging from 0 (indicating the best fit) and 1 (indicating the worst fit).
+-----------------------
+**unwrap_category_columns**(*data: pd.DataFrame, idx_to_key: dict, cat_cols: List[str]*)
 
-::: genai_evaluation.ks_statistic
+All the collapsed categorical columns can also be expanded using the same flag vector created during wrapping process
+
+::: nogan_synthesizer.preprocessing.unwrap_category_columns

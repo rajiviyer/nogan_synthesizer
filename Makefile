@@ -47,33 +47,33 @@ clean-test: ## remove test and coverage artifacts
 	rm -fr htmlcov/
 	rm -fr .pytest_cache
 
-lint/flake8: ## check style with flake8
-	flake8 genai_evaluation tests
+# lint/flake8: ## check style with flake8
+# 	flake8 nogan_synthesizer tests
 
-lint: lint/flake8 ## check style
+# lint: lint/flake8 ## check style
 
 test: ## run tests quickly with the default Python
 	pytest
 
-test-all: ## run tests on every Python version with tox
-	tox
+# test-all: ## run tests on every Python version with tox
+# 	tox
 
-coverage: ## check code coverage quickly with the default Python
-	coverage run --source genai_evaluation -m pytest
-	coverage report -m
-	coverage html
-	$(BROWSER) htmlcov/index.html
+# coverage: ## check code coverage quickly with the default Python
+# 	coverage run --source nogan_synthesizer -m pytest
+# 	coverage report -m
+# 	coverage html
+# 	$(BROWSER) htmlcov/index.html
 
-docs: ## generate Sphinx HTML documentation, including API docs
-	rm -f docs/genai_evaluation.rst
-	rm -f docs/modules.rst
-	sphinx-apidoc -o docs/ genai_evaluation
-	$(MAKE) -C docs clean
-	$(MAKE) -C docs html
-	$(BROWSER) docs/_build/html/index.html
+# docs: ## generate Sphinx HTML documentation, including API docs
+# 	rm -f docs/genai_evaluation.rst
+# 	rm -f docs/modules.rst
+# 	sphinx-apidoc -o docs/ genai_evaluation
+# 	$(MAKE) -C docs clean
+# 	$(MAKE) -C docs html
+# 	$(BROWSER) docs/_build/html/index.html
 
-servedocs: docs ## compile the docs watching for changes
-	watchmedo shell-command -p '*.rst' -c '$(MAKE) -C docs html' -R -D .
+# servedocs: docs ## compile the docs watching for changes
+# 	watchmedo shell-command -p '*.rst' -c '$(MAKE) -C docs html' -R -D .
 
 release: dist ## package and upload a release
 	twine upload dist/*
