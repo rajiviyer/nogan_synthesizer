@@ -87,6 +87,34 @@ def test_wrap_category_columns():
         wrapped_df, idx_to_key, key_to_idx = wrap_category_columns(df, cat_cols)  
 
     # No Errors expected
+    
+    # 2 categorical columns (numerical and text) & 1 numerical column
+    df = pd.DataFrame({"col1": [2, 5, 6], 
+                       "col2": ["high", "low", "medium"],
+                       "col5": [2, 3, 4]                       
+                    })   
+    cat_cols = ["col2", "col5"]
+    wrapped_df, idx_to_key, key_to_idx = wrap_category_columns(df, cat_cols)
+    assert len(wrapped_df.columns) == 2 
+    
+    # Only 2 categorical columns (numerical and text)
+    df = pd.DataFrame({"col1": [2, 5, 6], 
+                    "col2": ["high", "low", "medium"]
+                    })   
+    cat_cols = ["col1", "col2"]
+    wrapped_df, idx_to_key, key_to_idx = wrap_category_columns(df, cat_cols)
+    assert len(wrapped_df.columns) == 1
+
+    # Only 2 categorical columns (Both text)
+    df = pd.DataFrame({
+                    "col3": ["abc", "ghd", "dds"], 
+                    "col4": ["high", "low", "medium"]
+                    })
+
+    cat_cols = ["col3", "col4"]
+    wrapped_df, idx_to_key, key_to_idx = wrap_category_columns(df, cat_cols)
+    assert len(wrapped_df.columns) == 1    
+    
     df = pd.DataFrame({"col1": [2, 5, 6], 
                     "col2": [1.04, 4.22, 8.32], 
                     "col3": ["abc", "ghd", "dds"], 

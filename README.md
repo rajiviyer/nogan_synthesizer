@@ -1,5 +1,5 @@
 # NOGAN SYNTHESIZER
-<!-- [![PyPI version](https://badge.fury.io/py/genai-evaluation.svg)](https://badge.fury.io/py/genai-evaluation) -->
+[![PyPI version](https://badge.fury.io/py/nogan-synthesizer.svg)](https://badge.fury.io/py/nogan-synthesizer)
 [![Documentation](https://img.shields.io/badge/Documentation-%20-blue)](https://rajiviyer.github.io/nogan_synthesizer/)
 
 

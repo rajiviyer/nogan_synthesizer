@@ -8,7 +8,7 @@ __pycache__/
 
 # misc files
 tox.ini
-test.ipynb
+*.ipynb
 *.rst
 *.csv
 

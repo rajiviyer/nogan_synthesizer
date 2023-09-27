@@ -132,7 +132,9 @@ class NoGANSynth:
         Returns:
             pd.DataFrame: Generate Synthetic Pandas DataFrame
         """
-
+        if self.random_seed:
+            np.random.seed(self.random_seed)
+            
         bin_count_random = self._random_bin_counts(no_of_rows)
         data_synth = []
         for i, key in enumerate(self.bin_keys):

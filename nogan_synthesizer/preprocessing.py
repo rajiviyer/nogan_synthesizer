@@ -49,8 +49,9 @@ def wrap_category_columns(data: pd.DataFrame,
                   for i, v in enumerate(flag_vector,1)}
     idx_to_key = {i:tuple(v) for i, v in enumerate(flag_vector,1)}
 
-    df["cat_label"] = [key_to_idx[str(row).replace("(","").replace(")","")]
-                       for row in cat_data.to_records(index=False)]
+    df["cat_label"] = \
+        [key_to_idx[str(row).replace("(","").replace(")","").strip(",")]
+         for row in cat_data.to_records(index=False)]
 
     df = df[num_cols + ["cat_label"]]
 
