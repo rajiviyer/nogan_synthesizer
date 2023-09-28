@@ -47,6 +47,7 @@ class NoGANSynth:
         self.features = data.columns
         self.int_columns = data.select_dtypes(include=['int']).columns  
         self.nobs = len(self.data)
+        self.median = np.median(self.data, axis = 0)
 
         # Any special characters or space in column names will be cleaned up
         self.n_features = len(self.features)
@@ -71,40 +72,47 @@ class NoGANSynth:
         else:
             self.bins_per_feature = bins
 
+        # create quantile table bin_edges, one row for each feature
         self.bin_edges = [np.quantile(self.data[:, k],
                                       np.arange(0, 1 + self.eps,
                                                 1/self.bins_per_feature[k]),
                                       axis=0
                                       ) for k in range(self.n_features)]
 
-        bin_indices = np.array([np.clip(np.searchsorted(self.bin_edges[col], 
-                                                        self.data[:, col], side='right')-1,
-                                        0,
-                                        len(self.bin_edges[col])-2
-                                        ) for col in range(self.data.shape[1])])
-
-        bin_indices = bin_indices.T
-
-        # Find the counts of all unique list entries
-        unique_entries, counts = np.unique(bin_indices,
-                                           axis=0,
-                                           return_counts=True)
-
-        # Create a dictionary having each entry as key and corresponding 
-        # counts and actual lists as values
         bin_keys = {}
-        for entry, count in zip(unique_entries, counts):
-            key_str = ', '.join(map(str, entry))
-            lower_val = [self.bin_edges[k][entry[k]] 
-                         for k in range(len(entry))]
-            upper_val = [self.bin_edges[k][1 + entry[k]] 
-                         for k in range(len(entry))]
-            bin_keys[key_str] = {'frequency': count, 
-                                 'value': entry, 
-                                 'lower_val': lower_val, 
-                                 'upper_val': upper_val}
+        for obs in self.data:   
+            # For each observation column get the respective bin index based 
+            # on the quantile table bin_edges
+            bin_indices = [np.clip(np.searchsorted(self.bin_edges[k], 
+                                                   obs[k], side='right')-1,
+                                   0,
+                                   len(self.bin_edges[k])-2
+                                   )
+                           for k in range(self.n_features)]
+
+            # Convert the bin_indices into a string of comma separated values
+            # They are the multivariate keys used in bin_keys dictionary
+            key_str = ', '.join(map(str, bin_indices))              
+
+            # Calculate lower & upper bounds
+            lower_val = [self.bin_edges[k][bin_indices[k]]
+                         for k in range(self.n_features)]
+            upper_val = [self.bin_edges[k][1 + bin_indices[k]]
+                         for k in range(self.n_features)]
+
+            # frequency & sum_obs are the running counts & sum of observations
+            if key_str in bin_keys:
+                bin_keys[key_str]["frequency"] += 1
+                bin_keys[key_str]["sum_obs"] += obs
+            else:
+                bin_keys[key_str] = {"sum_obs": obs,
+                                     "frequency": 1,
+                                     "value": bin_indices,
+                                     "lower_val": lower_val,
+                                     "upper_val": upper_val}
 
         self.bin_keys = bin_keys
+
 
     def _random_bin_counts(self, no_of_rows: int) -> np.array:
         """
@@ -119,7 +127,11 @@ class NoGANSynth:
             pvals.append(self.bin_keys[key]["frequency"]/self.nobs)
         return(np.random.multinomial(no_of_rows, pvals))
 
-    def generate_synthetic_data(self, no_of_rows: int = 100) -> pd.DataFrame:
+    def generate_synthetic_data(self, no_of_rows: int = 100, 
+                                stretch_type: List = None,
+                                stretch: List = None,
+                                debug: bool = False
+                                ) -> pd.DataFrame:
         """
         The main function which Generates the Synthetic Data.
         It calls random bin to create the multinomial bin counts.
@@ -128,6 +140,12 @@ class NoGANSynth:
         
         Args:
             no_of_rows (int): Row Count
+            stretch_type (List): List of values {"Gaussian","Uniform"}. Specifies 
+                                the Sampling Type for each column. Any value in List which is not `Uniform` will be treated as `Gaussian`. Default value is `Uniform` for all columns.
+            stretch (List): Specifies the stretching factor (scale) for each 
+                            column. Values between 0 and 1 with `Uniform` stretch type keeps generated observations inside each
+                            hyperrectangle. Default value is 1.0 for all columns.
+            debug (bool): Flag to activate debugging. Default is False
 
         Returns:
             pd.DataFrame: Generate Synthetic Pandas DataFrame
@@ -135,17 +153,40 @@ class NoGANSynth:
         if self.random_seed:
             np.random.seed(self.random_seed)
             
+        if not stretch_type:
+            stretch_type = ["Uniform" for _ in range(self.n_features)]
+        if not stretch:
+            stretch = [1.0 for _ in range(self.n_features)]
+        stretch = np.array(stretch, dtype = np.float32)
+        
+        if debug:
+            print(f"List `stretch_type`: {stretch_type}")
+            print(f"List `stretch`: {stretch}")
+                
         bin_count_random = self._random_bin_counts(no_of_rows)
         data_synth = []
+            
         for i, key in enumerate(self.bin_keys):
             lower_val = self.bin_keys[key]["lower_val"]
             upper_val = self.bin_keys[key]["upper_val"]
+            mean_val = self.bin_keys[key]["sum_obs"] / self.bin_keys[key]["frequency"]
             count = bin_count_random[i]
             for j in range(count):
                 new_obs = np.empty(self.n_features)  # synthesized obs
                 for k in range(self.n_features):
-                    new_obs[k] = np.random.uniform(lower_val[k], 
-                                                   upper_val[k])
+                    if stretch[k] < 0:
+                        new_obs[k] = np.random.uniform(lower_val[k], 
+                                                       upper_val[k])
+                    else:
+                        if stretch_type[k] == 'Uniform':
+                            deviate = np.random.uniform(-1, 1) 
+                        else:
+                            deviate = np.random.normal(0, 1)
+                        dist_to_edge = \
+                        min(mean_val[k] - lower_val[k], upper_val[k] - mean_val[k])
+                        new_obs[k] = \
+                        mean_val[k] + dist_to_edge * stretch[k] * deviate
+                            
                 data_synth.append(new_obs)
         data_synth = pd.DataFrame(data_synth, columns=self.features)
 
