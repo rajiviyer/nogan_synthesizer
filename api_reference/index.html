@@ -262,7 +262,50 @@
 <span class="normal">150</span>
 <span class="normal">151</span>
 <span class="normal">152</span>
-<span class="normal">153</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">NoGANSynth</span><span class="p">:</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">NoGANSynth</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The main NoGAN Synthesizer Class</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -303,6 +346,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">features</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">int_columns</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">select_dtypes</span><span class="p">(</span><span class="n">include</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;int&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">columns</span>  
         <span class="bp">self</span><span class="o">.</span><span class="n">nobs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">median</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
 
         <span class="c1"># Any special characters or space in column names will be cleaned up</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_features</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">)</span>
@@ -327,40 +371,47 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">bins_per_feature</span> <span class="o">=</span> <span class="n">bins</span>
 
+        <span class="c1"># create quantile table bin_edges, one row for each feature</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bin_edges</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span> <span class="n">k</span><span class="p">],</span>
                                       <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps</span><span class="p">,</span>
                                                 <span class="mi">1</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">bins_per_feature</span><span class="p">[</span><span class="n">k</span><span class="p">]),</span>
                                       <span class="n">axis</span><span class="o">=</span><span class="mi">0</span>
                                       <span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_features</span><span class="p">)]</span>
 
-        <span class="n">bin_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bin_edges</span><span class="p">[</span><span class="n">col</span><span class="p">],</span> 
-                                                        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span> <span class="n">col</span><span class="p">],</span> <span class="n">side</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span>
-                                        <span class="mi">0</span><span class="p">,</span>
-                                        <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bin_edges</span><span class="p">[</span><span class="n">col</span><span class="p">])</span><span class="o">-</span><span class="mi">2</span>
-                                        <span class="p">)</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])])</span>
-
-        <span class="n">bin_indices</span> <span class="o">=</span> <span class="n">bin_indices</span><span class="o">.</span><span class="n">T</span>
-
-        <span class="c1"># Find the counts of all unique list entries</span>
-        <span class="n">unique_entries</span><span class="p">,</span> <span class="n">counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">bin_indices</span><span class="p">,</span>
-                                           <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                                           <span class="n">return_counts</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-        <span class="c1"># Create a dictionary having each entry as key and corresponding </span>
-        <span class="c1"># counts and actual lists as values</span>
         <span class="n">bin_keys</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">entry</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">unique_entries</span><span class="p">,</span> <span class="n">counts</span><span class="p">):</span>
-            <span class="n">key_str</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">entry</span><span class="p">))</span>
-            <span class="n">lower_val</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">bin_edges</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">entry</span><span class="p">[</span><span class="n">k</span><span class="p">]]</span> 
-                         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">entry</span><span class="p">))]</span>
-            <span class="n">upper_val</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">bin_edges</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="mi">1</span> <span class="o">+</span> <span class="n">entry</span><span class="p">[</span><span class="n">k</span><span class="p">]]</span> 
-                         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">entry</span><span class="p">))]</span>
-            <span class="n">bin_keys</span><span class="p">[</span><span class="n">key_str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;frequency&#39;</span><span class="p">:</span> <span class="n">count</span><span class="p">,</span> 
-                                 <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">entry</span><span class="p">,</span> 
-                                 <span class="s1">&#39;lower_val&#39;</span><span class="p">:</span> <span class="n">lower_val</span><span class="p">,</span> 
-                                 <span class="s1">&#39;upper_val&#39;</span><span class="p">:</span> <span class="n">upper_val</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">obs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>   
+            <span class="c1"># For each observation column get the respective bin index based </span>
+            <span class="c1"># on the quantile table bin_edges</span>
+            <span class="n">bin_indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bin_edges</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> 
+                                                   <span class="n">obs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">side</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+                                   <span class="mi">0</span><span class="p">,</span>
+                                   <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bin_edges</span><span class="p">[</span><span class="n">k</span><span class="p">])</span><span class="o">-</span><span class="mi">2</span>
+                                   <span class="p">)</span>
+                           <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_features</span><span class="p">)]</span>
+
+            <span class="c1"># Convert the bin_indices into a string of comma separated values</span>
+            <span class="c1"># They are the multivariate keys used in bin_keys dictionary</span>
+            <span class="n">key_str</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">bin_indices</span><span class="p">))</span>              
+
+            <span class="c1"># Calculate lower &amp; upper bounds</span>
+            <span class="n">lower_val</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">bin_edges</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">bin_indices</span><span class="p">[</span><span class="n">k</span><span class="p">]]</span>
+                         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_features</span><span class="p">)]</span>
+            <span class="n">upper_val</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">bin_edges</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="mi">1</span> <span class="o">+</span> <span class="n">bin_indices</span><span class="p">[</span><span class="n">k</span><span class="p">]]</span>
+                         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_features</span><span class="p">)]</span>
+
+            <span class="c1"># frequency &amp; sum_obs are the running counts &amp; sum of observations</span>
+            <span class="k">if</span> <span class="n">key_str</span> <span class="ow">in</span> <span class="n">bin_keys</span><span class="p">:</span>
+                <span class="n">bin_keys</span><span class="p">[</span><span class="n">key_str</span><span class="p">][</span><span class="s2">&quot;frequency&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">bin_keys</span><span class="p">[</span><span class="n">key_str</span><span class="p">][</span><span class="s2">&quot;sum_obs&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">obs</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">bin_keys</span><span class="p">[</span><span class="n">key_str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;sum_obs&quot;</span><span class="p">:</span> <span class="n">obs</span><span class="p">,</span>
+                                     <span class="s2">&quot;frequency&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                                     <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">bin_indices</span><span class="p">,</span>
+                                     <span class="s2">&quot;lower_val&quot;</span><span class="p">:</span> <span class="n">lower_val</span><span class="p">,</span>
+                                     <span class="s2">&quot;upper_val&quot;</span><span class="p">:</span> <span class="n">upper_val</span><span class="p">}</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">bin_keys</span> <span class="o">=</span> <span class="n">bin_keys</span>
+
 
     <span class="k">def</span> <span class="nf">_random_bin_counts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">no_of_rows</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -375,7 +426,11 @@
             <span class="n">pvals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bin_keys</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;frequency&quot;</span><span class="p">]</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">nobs</span><span class="p">)</span>
         <span class="k">return</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multinomial</span><span class="p">(</span><span class="n">no_of_rows</span><span class="p">,</span> <span class="n">pvals</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">generate_synthetic_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">no_of_rows</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">generate_synthetic_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">no_of_rows</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> 
+                                <span class="n">stretch_type</span><span class="p">:</span> <span class="n">List</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                                <span class="n">stretch</span><span class="p">:</span> <span class="n">List</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                                <span class="n">debug</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+                                <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The main function which Generates the Synthetic Data.</span>
 <span class="sd">        It calls random bin to create the multinomial bin counts.</span>
@@ -384,22 +439,53 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            no_of_rows (int): Row Count</span>
+<span class="sd">            stretch_type (List): List of values {&quot;Gaussian&quot;,&quot;Uniform&quot;}. Specifies </span>
+<span class="sd">                                the Sampling Type for each column. Any value in List which is not `Uniform` will be treated as `Gaussian`. Default value is `Uniform` for all columns.</span>
+<span class="sd">            stretch (List): Specifies the stretching factor (scale) for each </span>
+<span class="sd">                            column. Values between 0 and 1 with `Uniform` stretch type keeps generated observations inside each</span>
+<span class="sd">                            hyperrectangle. Default value is 1.0 for all columns.</span>
+<span class="sd">            debug (bool): Flag to activate debugging. Default is False</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            pd.DataFrame: Generate Synthetic Pandas DataFrame</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">random_seed</span><span class="p">:</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">random_seed</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">stretch_type</span><span class="p">:</span>
+            <span class="n">stretch_type</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Uniform&quot;</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_features</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">stretch</span><span class="p">:</span>
+            <span class="n">stretch</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_features</span><span class="p">)]</span>
+        <span class="n">stretch</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">stretch</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;List `stretch_type`: </span><span class="si">{</span><span class="n">stretch_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;List `stretch`: </span><span class="si">{</span><span class="n">stretch</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="n">bin_count_random</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_random_bin_counts</span><span class="p">(</span><span class="n">no_of_rows</span><span class="p">)</span>
         <span class="n">data_synth</span> <span class="o">=</span> <span class="p">[]</span>
+
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bin_keys</span><span class="p">):</span>
             <span class="n">lower_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bin_keys</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;lower_val&quot;</span><span class="p">]</span>
             <span class="n">upper_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bin_keys</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;upper_val&quot;</span><span class="p">]</span>
+            <span class="n">mean_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bin_keys</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;sum_obs&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">bin_keys</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;frequency&quot;</span><span class="p">]</span>
             <span class="n">count</span> <span class="o">=</span> <span class="n">bin_count_random</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span><span class="p">):</span>
                 <span class="n">new_obs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_features</span><span class="p">)</span>  <span class="c1"># synthesized obs</span>
                 <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_features</span><span class="p">):</span>
-                    <span class="n">new_obs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">lower_val</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> 
-                                                   <span class="n">upper_val</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="n">stretch</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">new_obs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">lower_val</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> 
+                                                       <span class="n">upper_val</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">stretch_type</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Uniform&#39;</span><span class="p">:</span>
+                            <span class="n">deviate</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> 
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">deviate</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                        <span class="n">dist_to_edge</span> <span class="o">=</span> \
+                        <span class="nb">min</span><span class="p">(</span><span class="n">mean_val</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">-</span> <span class="n">lower_val</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">upper_val</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">-</span> <span class="n">mean_val</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+                        <span class="n">new_obs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> \
+                        <span class="n">mean_val</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">+</span> <span class="n">dist_to_edge</span> <span class="o">*</span> <span class="n">stretch</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">deviate</span>
+
                 <span class="n">data_synth</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_obs</span><span class="p">)</span>
         <span class="n">data_synth</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data_synth</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">)</span>
 
@@ -606,7 +692,8 @@
 <span class="normal">51</span>
 <span class="normal">52</span>
 <span class="normal">53</span>
-<span class="normal">54</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">random_seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">54</span>
+<span class="normal">55</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">random_seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Initialize Data, no of objects, features, no of features and epsilon</span>
 
@@ -643,6 +730,7 @@
     <span class="bp">self</span><span class="o">.</span><span class="n">features</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">int_columns</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">select_dtypes</span><span class="p">(</span><span class="n">include</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;int&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">columns</span>  
     <span class="bp">self</span><span class="o">.</span><span class="n">nobs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">median</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
 
     <span class="c1"># Any special characters or space in column names will be cleaned up</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">n_features</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">)</span>
@@ -702,8 +790,7 @@
 
           <details class="quote">
             <summary>Source code in <code>nogan_synthesizer\nogan_synthesizer.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 56</span>
-<span class="normal"> 57</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 57</span>
 <span class="normal"> 58</span>
 <span class="normal"> 59</span>
 <span class="normal"> 60</span>
@@ -753,7 +840,14 @@
 <span class="normal">104</span>
 <span class="normal">105</span>
 <span class="normal">106</span>
-<span class="normal">107</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bins</span><span class="p">:</span> <span class="n">List</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bins</span><span class="p">:</span> <span class="n">List</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function to create bins for each Data column.</span>
 
@@ -771,38 +865,44 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bins_per_feature</span> <span class="o">=</span> <span class="n">bins</span>
 
+    <span class="c1"># create quantile table bin_edges, one row for each feature</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">bin_edges</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span> <span class="n">k</span><span class="p">],</span>
                                   <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps</span><span class="p">,</span>
                                             <span class="mi">1</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">bins_per_feature</span><span class="p">[</span><span class="n">k</span><span class="p">]),</span>
                                   <span class="n">axis</span><span class="o">=</span><span class="mi">0</span>
                                   <span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_features</span><span class="p">)]</span>
 
-    <span class="n">bin_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bin_edges</span><span class="p">[</span><span class="n">col</span><span class="p">],</span> 
-                                                    <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span> <span class="n">col</span><span class="p">],</span> <span class="n">side</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span>
-                                    <span class="mi">0</span><span class="p">,</span>
-                                    <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bin_edges</span><span class="p">[</span><span class="n">col</span><span class="p">])</span><span class="o">-</span><span class="mi">2</span>
-                                    <span class="p">)</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])])</span>
-
-    <span class="n">bin_indices</span> <span class="o">=</span> <span class="n">bin_indices</span><span class="o">.</span><span class="n">T</span>
-
-    <span class="c1"># Find the counts of all unique list entries</span>
-    <span class="n">unique_entries</span><span class="p">,</span> <span class="n">counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">bin_indices</span><span class="p">,</span>
-                                       <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                                       <span class="n">return_counts</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-    <span class="c1"># Create a dictionary having each entry as key and corresponding </span>
-    <span class="c1"># counts and actual lists as values</span>
     <span class="n">bin_keys</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">entry</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">unique_entries</span><span class="p">,</span> <span class="n">counts</span><span class="p">):</span>
-        <span class="n">key_str</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">entry</span><span class="p">))</span>
-        <span class="n">lower_val</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">bin_edges</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">entry</span><span class="p">[</span><span class="n">k</span><span class="p">]]</span> 
-                     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">entry</span><span class="p">))]</span>
-        <span class="n">upper_val</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">bin_edges</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="mi">1</span> <span class="o">+</span> <span class="n">entry</span><span class="p">[</span><span class="n">k</span><span class="p">]]</span> 
-                     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">entry</span><span class="p">))]</span>
-        <span class="n">bin_keys</span><span class="p">[</span><span class="n">key_str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;frequency&#39;</span><span class="p">:</span> <span class="n">count</span><span class="p">,</span> 
-                             <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">entry</span><span class="p">,</span> 
-                             <span class="s1">&#39;lower_val&#39;</span><span class="p">:</span> <span class="n">lower_val</span><span class="p">,</span> 
-                             <span class="s1">&#39;upper_val&#39;</span><span class="p">:</span> <span class="n">upper_val</span><span class="p">}</span>
+    <span class="k">for</span> <span class="n">obs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>   
+        <span class="c1"># For each observation column get the respective bin index based </span>
+        <span class="c1"># on the quantile table bin_edges</span>
+        <span class="n">bin_indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bin_edges</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> 
+                                               <span class="n">obs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">side</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+                               <span class="mi">0</span><span class="p">,</span>
+                               <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bin_edges</span><span class="p">[</span><span class="n">k</span><span class="p">])</span><span class="o">-</span><span class="mi">2</span>
+                               <span class="p">)</span>
+                       <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_features</span><span class="p">)]</span>
+
+        <span class="c1"># Convert the bin_indices into a string of comma separated values</span>
+        <span class="c1"># They are the multivariate keys used in bin_keys dictionary</span>
+        <span class="n">key_str</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">bin_indices</span><span class="p">))</span>              
+
+        <span class="c1"># Calculate lower &amp; upper bounds</span>
+        <span class="n">lower_val</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">bin_edges</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">bin_indices</span><span class="p">[</span><span class="n">k</span><span class="p">]]</span>
+                     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_features</span><span class="p">)]</span>
+        <span class="n">upper_val</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">bin_edges</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="mi">1</span> <span class="o">+</span> <span class="n">bin_indices</span><span class="p">[</span><span class="n">k</span><span class="p">]]</span>
+                     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_features</span><span class="p">)]</span>
+
+        <span class="c1"># frequency &amp; sum_obs are the running counts &amp; sum of observations</span>
+        <span class="k">if</span> <span class="n">key_str</span> <span class="ow">in</span> <span class="n">bin_keys</span><span class="p">:</span>
+            <span class="n">bin_keys</span><span class="p">[</span><span class="n">key_str</span><span class="p">][</span><span class="s2">&quot;frequency&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">bin_keys</span><span class="p">[</span><span class="n">key_str</span><span class="p">][</span><span class="s2">&quot;sum_obs&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">obs</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">bin_keys</span><span class="p">[</span><span class="n">key_str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;sum_obs&quot;</span><span class="p">:</span> <span class="n">obs</span><span class="p">,</span>
+                                 <span class="s2">&quot;frequency&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                                 <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">bin_indices</span><span class="p">,</span>
+                                 <span class="s2">&quot;lower_val&quot;</span><span class="p">:</span> <span class="n">lower_val</span><span class="p">,</span>
+                                 <span class="s2">&quot;upper_val&quot;</span><span class="p">:</span> <span class="n">upper_val</span><span class="p">}</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">bin_keys</span> <span class="o">=</span> <span class="n">bin_keys</span>
 </code></pre></div></td></tr></table></div>
@@ -818,7 +918,7 @@
 
 
 <h2 id="nogan_synthesizer.NoGANSynth.generate_synthetic_data" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">generate_synthetic_data</span><span class="p">(</span><span class="n">no_of_rows</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span></code>
+          <code class="highlight language-python"><span class="n">generate_synthetic_data</span><span class="p">(</span><span class="n">no_of_rows</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">stretch_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stretch</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
 
 </h2>
 
@@ -857,6 +957,51 @@ Once the new observations list is generated, convert into a pandas synthetic dat
                 <code>100</code>
           </td>
         </tr>
+        <tr>
+          <td><code>stretch_type</code></td>
+          <td>
+                <code><span title="typing.List">List</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>List of values {"Gaussian","Uniform"}. Specifies 
+                the Sampling Type for each column. Any value in List which is not <code>Uniform</code> will be treated as <code>Gaussian</code>. Default value is <code>Uniform</code> for all columns.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>stretch</code></td>
+          <td>
+                <code><span title="typing.List">List</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Specifies the stretching factor (scale) for each 
+            column. Values between 0 and 1 with <code>Uniform</code> stretch type keeps generated observations inside each
+            hyperrectangle. Default value is 1.0 for all columns.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>debug</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Flag to activate debugging. Default is False</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
     </tbody>
   </table>
 
@@ -886,15 +1031,7 @@ Once the new observations list is generated, convert into a pandas synthetic dat
 
           <details class="quote">
             <summary>Source code in <code>nogan_synthesizer\nogan_synthesizer.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span>
-<span class="normal">128</span>
-<span class="normal">129</span>
-<span class="normal">130</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">130</span>
 <span class="normal">131</span>
 <span class="normal">132</span>
 <span class="normal">133</span>
@@ -917,7 +1054,54 @@ Once the new observations list is generated, convert into a pandas synthetic dat
 <span class="normal">150</span>
 <span class="normal">151</span>
 <span class="normal">152</span>
-<span class="normal">153</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">generate_synthetic_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">no_of_rows</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">generate_synthetic_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">no_of_rows</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> 
+                            <span class="n">stretch_type</span><span class="p">:</span> <span class="n">List</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                            <span class="n">stretch</span><span class="p">:</span> <span class="n">List</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                            <span class="n">debug</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+                            <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The main function which Generates the Synthetic Data.</span>
 <span class="sd">    It calls random bin to create the multinomial bin counts.</span>
@@ -926,22 +1110,53 @@ Once the new observations list is generated, convert into a pandas synthetic dat
 
 <span class="sd">    Args:</span>
 <span class="sd">        no_of_rows (int): Row Count</span>
+<span class="sd">        stretch_type (List): List of values {&quot;Gaussian&quot;,&quot;Uniform&quot;}. Specifies </span>
+<span class="sd">                            the Sampling Type for each column. Any value in List which is not `Uniform` will be treated as `Gaussian`. Default value is `Uniform` for all columns.</span>
+<span class="sd">        stretch (List): Specifies the stretching factor (scale) for each </span>
+<span class="sd">                        column. Values between 0 and 1 with `Uniform` stretch type keeps generated observations inside each</span>
+<span class="sd">                        hyperrectangle. Default value is 1.0 for all columns.</span>
+<span class="sd">        debug (bool): Flag to activate debugging. Default is False</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        pd.DataFrame: Generate Synthetic Pandas DataFrame</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">random_seed</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">random_seed</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">stretch_type</span><span class="p">:</span>
+        <span class="n">stretch_type</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Uniform&quot;</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_features</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">stretch</span><span class="p">:</span>
+        <span class="n">stretch</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_features</span><span class="p">)]</span>
+    <span class="n">stretch</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">stretch</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;List `stretch_type`: </span><span class="si">{</span><span class="n">stretch_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;List `stretch`: </span><span class="si">{</span><span class="n">stretch</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="n">bin_count_random</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_random_bin_counts</span><span class="p">(</span><span class="n">no_of_rows</span><span class="p">)</span>
     <span class="n">data_synth</span> <span class="o">=</span> <span class="p">[]</span>
+
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bin_keys</span><span class="p">):</span>
         <span class="n">lower_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bin_keys</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;lower_val&quot;</span><span class="p">]</span>
         <span class="n">upper_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bin_keys</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;upper_val&quot;</span><span class="p">]</span>
+        <span class="n">mean_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bin_keys</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;sum_obs&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">bin_keys</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;frequency&quot;</span><span class="p">]</span>
         <span class="n">count</span> <span class="o">=</span> <span class="n">bin_count_random</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span><span class="p">):</span>
             <span class="n">new_obs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_features</span><span class="p">)</span>  <span class="c1"># synthesized obs</span>
             <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_features</span><span class="p">):</span>
-                <span class="n">new_obs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">lower_val</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> 
-                                               <span class="n">upper_val</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">stretch</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">new_obs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">lower_val</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> 
+                                                   <span class="n">upper_val</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">stretch_type</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Uniform&#39;</span><span class="p">:</span>
+                        <span class="n">deviate</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> 
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">deviate</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="n">dist_to_edge</span> <span class="o">=</span> \
+                    <span class="nb">min</span><span class="p">(</span><span class="n">mean_val</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">-</span> <span class="n">lower_val</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">upper_val</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">-</span> <span class="n">mean_val</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+                    <span class="n">new_obs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> \
+                    <span class="n">mean_val</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">+</span> <span class="n">dist_to_edge</span> <span class="o">*</span> <span class="n">stretch</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">deviate</span>
+
             <span class="n">data_synth</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_obs</span><span class="p">)</span>
     <span class="n">data_synth</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data_synth</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">)</span>
 
@@ -1161,7 +1376,8 @@ Once the new observations list is generated, convert into a pandas synthetic dat
 <span class="normal">54</span>
 <span class="normal">55</span>
 <span class="normal">56</span>
-<span class="normal">57</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">wrap_category_columns</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+<span class="normal">57</span>
+<span class="normal">58</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">wrap_category_columns</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
                           <span class="n">cat_cols</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Args:</span>
@@ -1207,8 +1423,9 @@ Once the new observations list is generated, convert into a pandas synthetic dat
                   <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">flag_vector</span><span class="p">,</span><span class="mi">1</span><span class="p">)}</span>
     <span class="n">idx_to_key</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span><span class="nb">tuple</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">flag_vector</span><span class="p">,</span><span class="mi">1</span><span class="p">)}</span>
 
-    <span class="n">df</span><span class="p">[</span><span class="s2">&quot;cat_label&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">key_to_idx</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;(&quot;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;)&quot;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">)]</span>
-                       <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">cat_data</span><span class="o">.</span><span class="n">to_records</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)]</span>
+    <span class="n">df</span><span class="p">[</span><span class="s2">&quot;cat_label&quot;</span><span class="p">]</span> <span class="o">=</span> \
+        <span class="p">[</span><span class="n">key_to_idx</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;(&quot;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;)&quot;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span>
+         <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">cat_data</span><span class="o">.</span><span class="n">to_records</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)]</span>
 
     <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">num_cols</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;cat_label&quot;</span><span class="p">]]</span>
 
@@ -1412,8 +1629,7 @@ Once the new observations list is generated, convert into a pandas synthetic dat
 
           <details class="quote">
             <summary>Source code in <code>nogan_synthesizer\preprocessing.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 60</span>
-<span class="normal"> 61</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 61</span>
 <span class="normal"> 62</span>
 <span class="normal"> 63</span>
 <span class="normal"> 64</span>
@@ -1468,7 +1684,8 @@ Once the new observations list is generated, convert into a pandas synthetic dat
 <span class="normal">113</span>
 <span class="normal">114</span>
 <span class="normal">115</span>
-<span class="normal">116</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">unwrap_category_columns</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">idx_to_key</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+<span class="normal">116</span>
+<span class="normal">117</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">unwrap_category_columns</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">idx_to_key</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
                             <span class="n">cat_cols</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Args:</span>
