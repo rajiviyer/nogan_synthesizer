@@ -10,3 +10,7 @@
 ## 0.1.2 (2023-09-27)
 ### Feature
 - Added Feature for flexible Uniform & Gaussian Sampling for columns in generate_synthetic_data method
+
+## 0.1.3 (2023-10-10)
+### Fixed
+- Resolved issues with float column when selected as category column

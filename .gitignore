@@ -11,6 +11,7 @@ tox.ini
 *.ipynb
 *.rst
 *.csv
+*.xlsx
 
 # Distribution / packaging
 .Python

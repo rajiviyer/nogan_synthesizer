@@ -9,3 +9,4 @@ pytest==7.4.2
 mkdocs==1.5.3
 mkdocs-material==9.3.2
 mkdocstrings-python==1.7.0
+openpyxl==3.1.2
