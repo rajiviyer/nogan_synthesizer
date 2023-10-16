@@ -144,6 +144,18 @@ def test_wrap_category_columns():
     wrapped_df, idx_to_key, key_to_idx = wrap_category_columns(df, cat_cols)
     assert len(wrapped_df.columns) == 1
 
+    # 3 categorical columns (3 text)
+    df = pd.DataFrame({"col1": [2, 5, 6], 
+                    "col2": [1.04, 4.22, 8.32], 
+                    "col3": ["abc", "ghd", "dds"], 
+                    "col4": ["high (temp)", "low (temp)", "medium (temp)"], 
+                    "col5": ["bad [rating]","good [rating]","satisfactory [rating]"]
+                    })
+
+    cat_cols = ["col3", "col4", "col5"]
+    wrapped_df, idx_to_key, key_to_idx = wrap_category_columns(df, cat_cols)
+    assert len(wrapped_df.columns) == 3
+
 
 def test_unwrap_category_columns():
     

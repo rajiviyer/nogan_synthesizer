@@ -14,3 +14,7 @@
 ## 0.1.3 (2023-10-10)
 ### Fixed
 - Resolved issues with float column when selected as category column
+
+## 0.1.4 (2023-10-16)
+### Fixed
+- Resolved issues with brackets "(" & ")" in category column values
