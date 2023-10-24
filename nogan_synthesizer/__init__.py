@@ -2,5 +2,5 @@
 
 __author__ = """Dr. Vincent Granville, Rajiv Iyer"""
 __email__ = 'vincentg@mltechniques.com, raju.rgi@gmail.com'
-__version__ = '0.1.4'
+__version__ = '0.1.5'
 from .nogan_synthesizer import *

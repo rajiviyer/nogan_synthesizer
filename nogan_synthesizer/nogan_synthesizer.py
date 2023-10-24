@@ -130,6 +130,7 @@ class NoGANSynth:
     def generate_synthetic_data(self, no_of_rows: int = 100, 
                                 stretch_type: List = None,
                                 stretch: List = None,
+                                gen_random_seed: int = None,
                                 debug: bool = False
                                 ) -> pd.DataFrame:
         """
@@ -145,12 +146,16 @@ class NoGANSynth:
             stretch (List): Specifies the stretching factor (scale) for each 
                             column. Values between 0 and 1 with `Uniform` stretch type keeps generated observations inside each
                             hyperrectangle. Default value is 1.0 for all columns.
+            gen_random_seed (int, optional): Random seed to be set before 
+                                        generation. It is set using `np.random.seed(random_seed)`. Defaults to None. If set to None, the random seed set at instantiation will be used
             debug (bool): Flag to activate debugging. Default is False
 
         Returns:
             pd.DataFrame: Generate Synthetic Pandas DataFrame
         """
-        if self.random_seed:
+        if gen_random_seed:
+            np.random.seed(gen_random_seed)
+        elif self.random_seed:
             np.random.seed(self.random_seed)
             
         if not stretch_type:

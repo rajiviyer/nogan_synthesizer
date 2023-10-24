@@ -248,4 +248,65 @@ def test_unwrap_category_columns():
                     3: ('dds', 'medium', 4)}
     cat_cols = ["col3", "col4", "col5"]
     unwrapped_df = unwrap_category_columns(df, idx_to_key, cat_cols)
-    assert len(unwrapped_df.columns) == 5      
+    assert len(unwrapped_df.columns) == 5
+    
+def test_generate_synth_data():
+    
+    # Random Seed set during Instantiation but not during Generation
+    df = pd.DataFrame({"col1": np.round(np.random.uniform(-2.0, 2.0, 
+                                                    size=400),
+                                    2),
+                    "col2": np.round(np.random.uniform(-2.0, 2.0,
+                                                    size=400),
+                                    2),
+                    "col3": np.round(np.random.uniform(-2.0, 2.0, 
+                                                    size=400)
+                                    )
+                    })
+    
+    nogan = NoGANSynth(df,random_seed = 1000)
+    nogan.fit()
+    num_rows = len(df)
+    synth_data = \
+        nogan.generate_synthetic_data(no_of_rows = num_rows)
+    assert len(synth_data.columns) == 3
+    
+    # Random Seed set during Instantiation & Generation
+    df = pd.DataFrame({"col1": np.round(np.random.uniform(-2.0, 2.0, 
+                                                    size=400),
+                                    2),
+                    "col2": np.round(np.random.uniform(-2.0, 2.0,
+                                                    size=400),
+                                    2),
+                    "col3": np.round(np.random.uniform(-2.0, 2.0, 
+                                                    size=400)
+                                    )
+                    })
+    
+    nogan = NoGANSynth(df,random_seed = 1000)
+    nogan.fit()
+    num_rows = len(df)
+    synth_data = \
+        nogan.generate_synthetic_data(no_of_rows = num_rows,
+                                      gen_random_seed = 1214)
+    assert len(synth_data.columns) == 3
+
+    # No Random Seed set during Instantiation & Generation
+    df = pd.DataFrame({"col1": np.round(np.random.uniform(-2.0, 2.0, 
+                                                    size=400),
+                                    2),
+                    "col2": np.round(np.random.uniform(-2.0, 2.0,
+                                                    size=400),
+                                    2),
+                    "col3": np.round(np.random.uniform(-2.0, 2.0, 
+                                                    size=400)
+                                    )
+                    })
+    
+    nogan = NoGANSynth(df)
+    nogan.fit()
+    num_rows = len(df)
+    synth_data = \
+        nogan.generate_synthetic_data(no_of_rows = num_rows)
+    assert len(synth_data.columns) == 3
+    

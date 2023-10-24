@@ -18,3 +18,7 @@
 ## 0.1.4 (2023-10-16)
 ### Fixed
 - Resolved issues with brackets "(" & ")" in category column values
+
+## 0.1.5 (2023-10-24)
+### Feature
+- Added gen random seed to be set during generation
